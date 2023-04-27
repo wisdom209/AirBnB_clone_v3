@@ -73,7 +73,7 @@ class FileStorage:
         """Returns the object based on the class and its ID,
         or None if not found"""
         all_obj = self.all()
-        search_key = cls.__dict__.__name__ + '.' + str(id)
+        search_key = cls.__name__ + '.' + str(id)
         return all_obj.get(search_key)
 
     def count(self, cls=None):
@@ -82,7 +82,7 @@ class FileStorage:
         if cls:
             count = 0
             for key, value in self.__objects.items():
-                if cls.__dict__.__name__ == value.__class__.__name__:
+                if cls.__name__ == key.split('.')[0]:
                     count += 1
             return (count)
         else:

@@ -79,15 +79,20 @@ class DBStorage:
         """Returns the object based on the class and its ID,
         or None if not found"""
         all_obj = self.all()
-        search_key = cls.__dict__.__name__ + '.' + str(id)
+        search_key = cls.__name__ + '.' + str(id)
         return all_obj.get(search_key)
 
     def count(self, cls=None):
         """Returns the number of objects in storage matching the given class.
-        If no class is passed, returns the count of all objects in storage"""
+          If no class is passed, returns the count of all objects in storage"""
         if cls:
-            class_name = cls.__dict__.__name__
-            num_records = self.__session.query(class_name).count()
-            return (num_records)
+            count = 0
+            for value in self.all():
+                if cls.__name__ == value.split('.')[0]:
+                    count += 1
+            return (count)
         else:
-            return (self.all())
+            count = 0
+            for value in self.all():
+                count += 1
+            return (count)
