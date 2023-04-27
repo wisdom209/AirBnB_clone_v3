@@ -1,15 +1,17 @@
 #!/usr/bin/python3
 """Starting up a Flask app"""
+from models import storage
+from models import *
 import os
 
-from models import storage
 from api.v1.views import app_views
 from flask import Flask, jsonify
 app = Flask(__name__)
 app.register_blueprint(app_views)
 
+
 @app.teardown_appcontext
-def tear_down():
+def tear_down(excepts):
     """remove session"""
     storage.close()
 
