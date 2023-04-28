@@ -33,6 +33,8 @@ def get_all_states():
     if request.method == 'POST':
         try:
             body = request.get_json()
+            if not body:
+                abort(400, "Not a JSON")
             if body.get('name') is None:
                 abort(400, 'Missing name')
             new_obj = State(**body)
@@ -40,11 +42,11 @@ def get_all_states():
             models.storage.save()
             return new_obj.to_dict()
         except Exception as e:
-            abort(400, str(e))
+            abort(400)
 
 
-@app_views.route('/states/<state_id>/',
-                 methods=['POST', 'GET', 'PUT', 'DELETE'],
+@app_views.route('/states/<state_id>',
+                 methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False)
 def work_on_a_state(state_id):
     """retrieve a states"""
@@ -56,21 +58,24 @@ def work_on_a_state(state_id):
     if request.method == 'DELETE':
         state_needed = models.storage.get(classes["State"], state_id)
         if state_needed:
-            state_needed.delete()
-            state_needed.save()
-            return str(state_needed)
+            models.storage.delete(state_needed)
+            models.storage.save()
+            return {}
         abort(404)
     if request.method == 'PUT':
         try:
             body = request.get_json()
+            if not body:
+                return abort(404, "Not a JSON")
             state_obj = models.storage.get(classes['State'], state_id)
             if not state_obj:
                 abort(404)
             for k, v in body.items():
                 if k not in ['id', 'created_at', 'updated_at']:
                     state_obj[k] = v
+            models.storage.save()
         except Exception:
-            abort(404, "Not a JSON")
+            abort(404)
 
 
 # 0e391e25-dd3a-45f4-bce3-4d1dea83f3c7
