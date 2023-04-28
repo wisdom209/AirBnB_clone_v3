@@ -22,14 +22,11 @@ classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
 def places_obj(city_id):
     """function that retrieves and create places"""
     if request.method == 'GET':
-        placesList = []
-        allPlaces = models.storage.all(classes["Place"])
-        if not allPlaces:
+        cityObj = models.storage.get(classes["City"], city_id)
+        if not cityObj:
             abort(404)
-        for val in allPlaces.values():
-            if val.city_id == city_id:
-                placesList.append(val.to_dict())
-        return placesList
+        for place in cityObj.places:
+            return place.to_dict()
 
     if request.method == 'POST':
         cityObj = models.storage.get(classes["City"], city_id)
