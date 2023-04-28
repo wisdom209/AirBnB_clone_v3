@@ -1,7 +1,15 @@
 #!/usr/bin/python3
 """create a blueprint for views"""
-from flask import jsonify, Blueprint
-app_views = Blueprint('app_views_blueprint', __name__, url_prefix='/api/v1')
+from models.user import User
+from models.state import State
+from models.review import Review
+from models.place import Place
+from models.city import City
+from models.base_model import BaseModel
+from models.amenity import Amenity
+import models
+from flask import jsonify
+from api.v1.views import app_views
 
 
 @app_views.route('/status', strict_slashes=False)
@@ -13,16 +21,14 @@ def get_status():
 @app_views.route('/stats', strict_slashes=False)
 def get_stats():
     """Get the db stats"""
-    import models
+    classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+               "Place": Place, "Review": Review, "State": State, "User": User}
     objects = {}
     key_set = set()
     all = models.storage.all()
     for key in all.keys():
         key_set.add(key.split('.')[0])
     for key in key_set:
-        count = 0
-        for keyObj in all.keys():
-            if keyObj.startswith(key):
-                count += 1
+        count = models.storage.count(classes[key])
         objects[key] = count
     return jsonify(objects)

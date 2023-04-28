@@ -10,6 +10,12 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 
 
+@app.errorhandler(404)
+def error_page(error):
+    """error 404 page"""
+    return jsonify({"error": "Not found"}), 404
+
+
 @app.teardown_appcontext
 def tear_down(excepts):
     """remove session"""
