@@ -46,6 +46,7 @@ def amenity_obj():
                  methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False)
 def amenity_http_methods(amenities_id):
+    """methods for GET, PUT, and DELETE using id variable"""
     amenitiesNeeded = models.storage.get(classes["Amenity"], amenities_id)
     if request.method == 'GET':
         if amenitiesNeeded:
