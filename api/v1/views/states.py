@@ -69,13 +69,14 @@ def work_on_a_state(state_id):
                 return abort(404, "Not a JSON")
             state_obj = models.storage.get(classes['State'], state_id)
             if not state_obj:
-                abort(404)
+                abort(404, 'Not a JSON')
             for k, v in body.items():
                 if k not in ['id', 'created_at', 'updated_at']:
-                    state_obj[k] = v
+                    setattr(state_obj, k, v)
             models.storage.save()
-        except Exception:
-            abort(404)
+            return state_obj.to_dict()
+        except Exception as e:
+            abort(404, str(e))
 
 
 # 0e391e25-dd3a-45f4-bce3-4d1dea83f3c7
