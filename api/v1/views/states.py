@@ -31,18 +31,15 @@ def get_all_states():
             state_list.append(value.to_dict())
         return state_list
     if request.method == 'POST':
-        try:
-            body = request.get_json()
-            if not body:
-                abort(400, "Not a JSON")
-            if body.get('name') is None:
-                abort(400, 'Missing name')
-            new_obj = State(**body)
-            models.storage.new(new_obj)
-            models.storage.save()
-            return new_obj.to_dict()
-        except Exception as e:
-            abort(400)
+        body = request.get_json()
+        if not body:
+            abort(400, "Not a JSON")
+        if body.get('name') is None:
+            abort(400, 'Missing name')
+        new_obj = State(**body)
+        models.storage.new(new_obj)
+        models.storage.save()
+        return new_obj.to_dict(), 201
 
 
 @app_views.route('/states/<state_id>',
@@ -63,21 +60,17 @@ def work_on_a_state(state_id):
             return {}
         abort(404)
     if request.method == 'PUT':
-        try:
-            body = request.get_json()
-            if not body:
-                return abort(404, "Not a JSON")
-            state_obj = models.storage.get(classes['State'], state_id)
-            if not state_obj:
-                abort(404, 'Not a JSON')
-            for k, v in body.items():
-                if k not in ['id', 'created_at', 'updated_at']:
-                    setattr(state_obj, k, v)
-            models.storage.save()
-            return state_obj.to_dict()
-        except Exception as e:
-            abort(404, str(e))
-
+        body = request.get_json()
+        if not body:
+            return abort(404, "Not a JSON")
+        state_obj = models.storage.get(classes['State'], state_id)
+        if not state_obj:
+            abort(404, 'Not a JSON')
+        for k, v in body.items():
+            if k not in ['id', 'created_at', 'updated_at']:
+                setattr(state_obj, k, v)
+        models.storage.save()
+        return state_obj.to_dict()
 
 # 0e391e25-dd3a-45f4-bce3-4d1dea83f3c7
 # 10098698-bace-4bfb-8c0a-6bae0f7f5b8f oregon
