@@ -26,7 +26,6 @@ def amenity_obj():
         for val in allAmenities.values():
             amenitiesList.append(val.to_dict())
         return amenitiesList
-
     if request.method == 'POST':
         try:
             body = request.get_json()
