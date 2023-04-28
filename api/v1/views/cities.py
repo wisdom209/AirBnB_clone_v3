@@ -47,7 +47,7 @@ def get_all_cities_by_stateId(state_id):
         return make_response(jsonify(new_city.to_dict()), 201)
 
 
-@ app_views.route('/cities/<city_id>', methods=['GET', 'DELETE'],
+@ app_views.route('/cities/<city_id>', methods=['GET', 'DELETE', 'PUT'],
                   strict_slashes=False)
 def work_on_a_city(city_id):
     """http methods on a city by id"""
@@ -57,7 +57,7 @@ def work_on_a_city(city_id):
             abort(404)
         return city.to_dict()
     if request.method == 'DELETE':
-        city = models.storage.get(classes["city"], city_id)
+        city = models.storage.get(classes["City"], city_id)
         if not city:
             abort(404)
         models.storage.delete(city)

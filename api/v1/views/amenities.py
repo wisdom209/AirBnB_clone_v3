@@ -16,6 +16,7 @@ from api.v1.views import app_views
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
+
 @app_views.route('/amenities', methods=['GET', 'POST'], strict_slashes=False)
 def amenity_obj():
     """function that retrieves and create amenities"""
@@ -25,4 +26,3 @@ def amenity_obj():
         for val in allAmenities.values():
             amenitiesList.append(val.to_dict())
         return amenitiesList
-
