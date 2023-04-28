@@ -42,7 +42,8 @@ def work_on_users():
         return new_user.to_dict(), 201
 
 
-@app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'], strict_slashes=False)
+@app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
+                 strict_slashes=False)
 def work_on_a_user(user_id):
     """working on users"""
     if request.method == 'GET':
