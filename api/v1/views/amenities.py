@@ -16,10 +16,10 @@ from api.v1.views import app_views
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
-@app_views.route('/amenities', methods=['GET', 'POST'] strict_slashes=False)
+@app_views.route('/amenities', methods=['GET', 'POST'], strict_slashes=False)
 def amenity_obj():
     """function that retrieves and create amenities"""
-    if request.methods == 'GET':
+    if request.method == 'GET':
         amenitiesList = []
         allAmenities = models.storage.all(classes["Amenity"])
         for val in allAmenities.values():
