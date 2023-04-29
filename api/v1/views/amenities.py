@@ -25,18 +25,17 @@ def amenity_obj():
         allAmenities = models.storage.all(classes["Amenity"])
         for val in allAmenities.values():
             amenitiesList.append(val.to_dict())
-        return amenitiesList
+        return jsonify(amenitiesList)
     if request.method == 'POST':
-        try:
-            body = request.get_json()
-        except Exception as e:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         if body.get("name") is None:
             abort(400, "Missing name")
         newObj = Amenity(**body)
         models.storage.new(newObj)
         models.storage.save()
-        return newObj.to_dict(), 201
+        return jsonify(newObj.to_dict(), 201)
 
 
 @app_views.route('/amenities/<amenities_id>',
@@ -47,24 +46,23 @@ def amenity_http_methods(amenities_id):
     amenitiesNeeded = models.storage.get(classes["Amenity"], amenities_id)
     if request.method == 'GET':
         if amenitiesNeeded:
-            return amenitiesNeeded.to_dict()
+            return jsonify(amenitiesNeeded.to_dict())
         abort(404)
     if request.method == 'DELETE':
         if amenitiesNeeded:
             models.storage.delete(amenitiesNeeded)
             models.storage.save()
-            return {}
+            return jsonify({})
         abort(404)
     if request.method == 'PUT':
-        try:
-            body = request.get_json()
-        except Exception as e:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
-            amenObj = models.storage.get(classes["Amenity"], amenities_id)
-            if not amenObj:
-                abort(404)
-            for key, val in body.items():
-                if key not in ["id", "created_at", "updated_at"]:
-                    setattr(amenObj, key, val)
-            models.storage.save()
-            return amenObj.to_dict()
+        amenObj = models.storage.get(classes["Amenity"], amenities_id)
+        if not amenObj:
+            abort(404)
+        for key, val in body.items():
+            if key not in ["id", "created_at", "updated_at"]:
+                setattr(amenObj, key, val)
+        models.storage.save()
+        return jsonify(amenObj.to_dict())
