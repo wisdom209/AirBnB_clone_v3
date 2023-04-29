@@ -29,15 +29,14 @@ def work_on_all_reviews_by_place_id(place_id):
             abort(404)
         for reviews in all_places.reviews:
             list_places.append(reviews.to_dict())
-        return list_places
+        return jsonify(list_places)
 
     if request.method == 'POST':
         placeObj = models.storage.get(Place, place_id)
         if not placeObj:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception as e:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         if body.get("user_id") is None:
             abort(400, "MIssing user_id")
@@ -50,7 +49,7 @@ def work_on_all_reviews_by_place_id(place_id):
         newObj = Review(**body)
         models.storage.new(newObj)
         models.storage.save()
-        return newObj.to_dict(), 201
+        return jsonify(newObj.to_dict(), 201)
 
 
 @app_views.route('/reviews/<review_id>', methods=['GET', 'POST', 'DELETE'],
@@ -63,22 +62,21 @@ def work_on_a_review(review_id):
             abort(404)
         models.storage.delete(review_obj)
         models.storage.save()
-        return {}
+        return jsonify({})
     if request.method == 'GET':
         review = models.storage.get(Review, review_id)
         if review:
-            return review.to_dict()
+            return jsonify(review.to_dict())
         abort(404)
     if request.method == 'PUT':
         reviewObj = models.storage.get(Review, review_id)
         if not reviewObj:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception as e:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         for key, val in body.items():
             if key not in ["id", "place_id", "created_at", "updated_at"]:
                 setattr(review, key, val)
         models.storage.save()
-        return reviewObj.to_dict()
+        return jsonify(reviewObj.to_dict())
