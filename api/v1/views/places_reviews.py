@@ -49,7 +49,7 @@ def work_on_all_reviews_by_place_id(place_id):
         newObj = Review(**body)
         models.storage.new(newObj)
         models.storage.save()
-        return jsonify(newObj.to_dict(), 201)
+        return (jsonify(newObj.to_dict()), 201)
 
 
 @app_views.route('/reviews/<review_id>', methods=['GET', 'POST', 'DELETE'],
