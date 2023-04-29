@@ -39,7 +39,7 @@ def get_all_states():
         new_obj = State(**body)
         models.storage.new(new_obj)
         models.storage.save()
-        return new_obj.to_dict(), 201
+        return jsonify(new_obj.to_dict()), 201
 
 
 @app_views.route('/states/<state_id>',
@@ -57,7 +57,7 @@ def work_on_a_state(state_id):
         if state_needed:
             models.storage.delete(state_needed)
             models.storage.save()
-            return {}
+            return jsonify({})
         abort(404)
     if request.method == 'PUT':
         body = request.get_json()
