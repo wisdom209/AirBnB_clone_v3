@@ -68,8 +68,9 @@ def work_on_a_city(city_id):
         city = models.storage.get(classes["City"], city_id)
         if not city:
             abort(404)
-        body = request.get_json()
-        if not body:
+        try:
+            body = request.get_json()
+        except Exception:
             abort(400, "Not a JSON")
         for k, v in body.items():
             if k not in ["id", "state_id", "created_at", "updated_at"]:
