@@ -39,7 +39,7 @@ def get_all_states():
         new_obj = State(**body)
         models.storage.new(new_obj)
         models.storage.save()
-        return jsonify(new_obj.to_dict()), 201
+        return make_response(jsonify(new_obj.to_dict()), 201)
 
 
 @app_views.route('/states/<state_id>',
