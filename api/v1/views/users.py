@@ -26,11 +26,10 @@ def work_on_users():
         user_list = []
         for v in users.values():
             user_list.append(v.to_dict())
-        return user_list
+        return jsonify(user_list)
     if request.method == 'POST':
-        try:
-            body = request.get_json()
-        except Exception:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         if not body.get('email'):
             abort(400, "Missing email")
@@ -39,7 +38,7 @@ def work_on_users():
         new_user = User(**body)
         models.storage.new(new_user)
         models.storage.save()
-        return new_user.to_dict(), 201
+        return jsonify(new_user.to_dict(), 201)
 
 
 @app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
@@ -50,24 +49,23 @@ def work_on_a_user(user_id):
         user = models.storage.get(classes['User'], user_id)
         if not user:
             abort(404)
-        return (user.to_dict())
+        return jsonify(user.to_dict())
     if request.method == 'DELETE':
         user = models.storage.get(classes['User'], user_id)
         if not user:
             abort(404)
         models.storage.delete(user)
         models.storage.save()
-        return {}
+        return jsonify({})
     if request.method == 'PUT':
         user = models.storage.get(classes['User'], user_id)
         if not user:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         for k, v in body.items():
             if k not in ['id', 'email', 'created_at', 'updated_at']:
                 setattr(user, k, v)
         models.storage.save()
-        return user.to_dict()
+        return jsonify(user.to_dict())
