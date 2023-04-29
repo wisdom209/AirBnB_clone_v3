@@ -21,13 +21,15 @@ classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
 @app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
                  strict_slashes=False)
 def work_on_all_reviews_by_place_id(place_id):
-    """retrieve the state's cities"""
+    """retrieve the places's reviews"""
     if request.method == 'GET':
         all_places = models.storage.get(Place, place_id)
+        list_places = []
         if not all_places:
             abort(404)
         for reviews in all_places.reviews:
-            return reviews.to_dict()
+            list_places.append(reviews.to_dict())
+        return list_places
 
     if request.method == 'POST':
         placeObj = models.storage.get(Place, place_id)
