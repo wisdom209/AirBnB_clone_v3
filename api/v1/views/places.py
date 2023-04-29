@@ -26,15 +26,14 @@ def places_obj(city_id):
         if not cityObj:
             abort(404)
         for place in cityObj.places:
-            return place.to_dict()
+            return jsonify(place.to_dict())
 
     if request.method == 'POST':
         cityObj = models.storage.get(classes["City"], city_id)
         if not cityObj:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception as e:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         body["city_id"] = city_id
         if body.get("user_id") is None:
@@ -47,7 +46,7 @@ def places_obj(city_id):
         newObj = Place(**body)
         models.storage.new(newObj)
         models.storage.save()
-        return newObj.to_dict(), 201
+        return jsonify(newObj.to_dict(), 201)
 
 
 @app_views.route('/places/<places_id>',
@@ -58,24 +57,23 @@ def places_http_methods(places_id):
     placesNeeded = models.storage.get(classes["Place"], places_id)
     if request.method == 'GET':
         if placesNeeded:
-            return placesNeeded.to_dict()
+            return jsonify(placesNeeded.to_dict())
         abort(404)
     if request.method == 'DELETE':
         if placesNeeded:
             models.storage.delete(placesNeeded)
             models.storage.save()
-            return {}
+            return jsonify({})
         abort(404)
     if request.method == 'PUT':
         placesObj = models.storage.get(classes["Place"], places_id)
         if not placesObj:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception as e:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         for key, val in body.items():
             if key not in ["id", "created_at", "updated_at"]:
                 setattr(placesObj, key, val)
         models.storage.save()
-        return placesObj.to_dict()
+        return jsonify(placesObj.to_dict())
