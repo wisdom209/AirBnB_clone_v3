@@ -29,7 +29,7 @@ def get_all_states():
         all_states = models.storage.all(classes["State"])
         for value in all_states.values():
             state_list.append(value.to_dict())
-        return state_list
+        return jsonify(state_list)
     if request.method == 'POST':
         body = request.get_json()
         if not body:
@@ -50,7 +50,7 @@ def work_on_a_state(state_id):
     if request.method == 'GET':
         state_needed = models.storage.get(classes["State"], state_id)
         if state_needed:
-            return (state_needed.to_dict())
+            return jsonify(state_needed.to_dict())
         abort(404)
     if request.method == 'DELETE':
         state_needed = models.storage.get(classes["State"], state_id)
@@ -70,7 +70,7 @@ def work_on_a_state(state_id):
             if k not in ['id', 'created_at', 'updated_at']:
                 setattr(state_obj, k, v)
         models.storage.save()
-        return state_obj.to_dict()
+        return jsonify(state_obj.to_dict())
 
 # 0e391e25-dd3a-45f4-bce3-4d1dea83f3c7
 # 10098698-bace-4bfb-8c0a-6bae0f7f5b8f oregon

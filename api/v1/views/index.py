@@ -24,11 +24,10 @@ def get_stats():
     classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
                "Place": Place, "Review": Review, "State": State, "User": User}
     objects = {}
-    key_set = set()
-    all = models.storage.all()
-    for key in all.keys():
-        key_set.add(key.split('.')[0])
-    for key in key_set:
-        count = models.storage.count(classes[key])
-        objects[key] = count
+    objects['amenities'] = models.storage.count(Amenity)
+    objects['cities'] = models.storage.count(City)
+    objects['places'] = models.storage.count(Place)
+    objects['reviews'] = models.storage.count(Review)
+    objects['states'] = models.storage.count(State)
+    objects['users'] = models.storage.count(User)
     return jsonify(objects)
