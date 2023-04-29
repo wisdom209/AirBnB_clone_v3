@@ -35,9 +35,8 @@ def get_all_cities_by_stateId(state_id):
         state_obj = models.storage.get(classes['State'], state_id)
         if not state_obj:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         if body.get("name") is None:
             abort(400, "Missing name")
@@ -68,9 +67,8 @@ def work_on_a_city(city_id):
         city = models.storage.get(classes["City"], city_id)
         if not city:
             abort(404)
-        try:
-            body = request.get_json()
-        except Exception:
+        body = request.get_json()
+        if not body:
             abort(400, "Not a JSON")
         for k, v in body.items():
             if k not in ["id", "state_id", "created_at", "updated_at"]:
