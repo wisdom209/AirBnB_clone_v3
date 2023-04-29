@@ -30,13 +30,14 @@ def get_all_cities_by_stateId(state_id):
         for value in all_cities.values():
             if value.state_id == state_id:
                 city_list.append(value.to_dict())
-        return city_list
+        return jsonify(city_list)
     if request.method == 'POST':
         state_obj = models.storage.get(classes['State'], state_id)
         if not state_obj:
             abort(404)
-        body = request.get_json()
-        if not body:
+        try:
+            body = request.get_json()
+        except Exception:
             abort(400, "Not a JSON")
         if body.get("name") is None:
             abort(400, "Missing name")
@@ -55,14 +56,14 @@ def work_on_a_city(city_id):
         city = models.storage.get(classes["City"], city_id)
         if not city:
             abort(404)
-        return city.to_dict()
+        return jsonify(city.to_dict())
     if request.method == 'DELETE':
         city = models.storage.get(classes["City"], city_id)
         if not city:
             abort(404)
         models.storage.delete(city)
         models.storage.save()
-        return {}
+        return jsonify({})
     if request.method == 'PUT':
         city = models.storage.get(classes["City"], city_id)
         if not city:
