@@ -79,4 +79,4 @@ def places_http_methods(place_id):
             if key not in ignore:
                 setattr(placeObj, key, val)
         models.storage.save()
-        return jsonify(placesObj.to_dict())
+        return jsonify(placeObj.to_dict())
