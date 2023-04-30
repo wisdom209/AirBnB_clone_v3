@@ -37,7 +37,6 @@ def places_obj(city_id):
         body = request.get_json()
         if not body:
             abort(400, "Not a JSON")
-        body["city_id"] = city_id
         if "user_id" not in body:
             abort(400, "Missing user_id")
         userObj = models.storage.get(User, body["user_id"])
@@ -45,8 +44,8 @@ def places_obj(city_id):
             abort(404)
         if "name" not in body:
             abort(400, "Missing name")
+        body["city_id"] = city_id
         newObj = Place(**body)
-        """models.storage.new(newObj)"""
         newObj.save()
         return make_response(jsonify(newObj.to_dict()), 201)
 
@@ -57,17 +56,17 @@ def places_obj(city_id):
 def places_http_methods(place_id):
     """methods for GET, PUT, and DELETE using id variable"""
     if request.method == 'GET':
-        placeNeeded = models.storage.get(Place, place_id)
-        if placeNeeded:
-            return jsonify(placeNeedeed.to_dict())
-        abort(404)
+        places = models.storage.get(Place, place_id)
+        if not places:
+            abort(404)
+        return jsonify(places.to_dict())
     if request.method == 'DELETE':
-        placeNeeded = models.storage.get(Place, place_id)
-        if placeNeeded:
-            models.storage.delete(placeNeeded)
-            models.storage.save()
-            return make_response(jsonify({}), 200)
-        abort(404)
+        places = models.storage.get(Place, place_id)
+        if not places:
+            abort(404)
+        models.storage.delete(places)
+        models.storage.save()
+        return make_response(jsonify({}), 200)
     if request.method == 'PUT':
         placeObj = models.storage.get(Place, place_id)
         if not placeObj:
@@ -80,4 +79,4 @@ def places_http_methods(place_id):
             if key not in ignore:
                 setattr(placeObj, key, val)
         models.storage.save()
-        return make_response(jsonify(placesObj.to_dict()), 200)
+        return jsonify(placesObj.to_dict())
