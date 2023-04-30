@@ -17,7 +17,7 @@ classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
 
 
-@app_views.route('cities/<city_id>/places',
+@app_views.route('/cities/<city_id>/places',
                  methods=['GET', 'POST'], strict_slashes=False)
 def places_obj(city_id):
     """function that retrieves and create places"""
