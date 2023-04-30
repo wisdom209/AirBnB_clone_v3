@@ -25,8 +25,10 @@ def places_obj(city_id):
         cityObj = models.storage.get(City, city_id)
         if not cityObj:
             abort(404)
+        places = []
         for place in cityObj.places:
-            return jsonify(place.to_dict())
+            places.append(place.to_dict())
+        return jsonify(places)
 
     if request.method == 'POST':
         cityObj = models.storage.get(City, city_id)
