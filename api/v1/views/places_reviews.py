@@ -27,8 +27,8 @@ def work_on_all_reviews_by_place_id(place_id):
         list_places = []
         if not all_places:
             abort(404)
-        for reviews in all_places.reviews:
-            list_places.append(reviews.to_dict())
+        for review in all_places.reviews:
+            list_places.append(review.to_dict())
         return jsonify(list_places)
 
     if request.method == 'POST':
@@ -38,8 +38,8 @@ def work_on_all_reviews_by_place_id(place_id):
         body = request.get_json()
         if not body:
             abort(400, "Not a JSON")
-        if body.get("user_id") is None:
-            abort(400, "MIssing user_id")
+        if "user_id" not in body:
+            abort(400, "Missing user_id")
         userObj = models.storage.get(User, body["user_id"])
         if not userObj:
             abort(404)
@@ -47,27 +47,26 @@ def work_on_all_reviews_by_place_id(place_id):
             abort(400, "Missing text")
         body["place_id"] = place_id
         newObj = Review(**body)
-        models.storage.new(newObj)
-        models.storage.save()
-        return (jsonify(newObj.to_dict()), 201)
+        newObj.save()
+        return make_response(jsonify(newObj.to_dict()), 201)
 
 
-@app_views.route('/reviews/<review_id>', methods=['GET', 'POST', 'DELETE'],
+@app_views.route('/reviews/<review_id>', methods=['GET', 'PUT', 'DELETE'],
                  strict_slashes=False)
 def work_on_a_review(review_id):
     """working on a review"""
     if request.method == 'DELETE':
-        review_obj = models.storage.get(classes['Review'], review_id)
+        review_obj = models.storage.get(Review, review_id)
         if not review_obj:
             abort(404)
         models.storage.delete(review_obj)
         models.storage.save()
-        return jsonify({})
+        return make_response(jsonify({}), 200)
     if request.method == 'GET':
         review = models.storage.get(Review, review_id)
-        if review:
-            return jsonify(review.to_dict())
-        abort(404)
+        if not review:
+            abort(404)
+        return jsonify(review.to_dict())
     if request.method == 'PUT':
         reviewObj = models.storage.get(Review, review_id)
         if not reviewObj:
@@ -75,8 +74,9 @@ def work_on_a_review(review_id):
         body = request.get_json()
         if not body:
             abort(400, "Not a JSON")
+        ignore = ["id", "user_id", "place_id", "created_at", "updated_at"]
         for key, val in body.items():
-            if key not in ["id", "place_id", "created_at", "updated_at"]:
-                setattr(review, key, val)
+            if key not in ignore:
+                setattr(reviewObj, key, val)
         models.storage.save()
         return jsonify(reviewObj.to_dict())
