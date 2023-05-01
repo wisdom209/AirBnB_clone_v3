@@ -2,6 +2,7 @@
 """Handle user objects"""
 from ast import mod
 import re
+import hashlib
 from models.user import User
 from models.state import State
 from models.review import Review
@@ -13,6 +14,7 @@ import models
 import datetime
 from flask import jsonify, abort, request, make_response
 from api.v1.views import app_views
+hash_object = hashlib.md5()
 
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -35,10 +37,13 @@ def work_on_users():
             abort(400, "Missing email")
         if not body.get('password'):
             abort(400, "Missing password")
+        hash_object.update(body["password"].encode())
+        hex_digit = hash_object.hexdigest()
         new_user = User(**body)
+        setattr(new_user, 'password', hex_digit)
         models.storage.new(new_user)
         models.storage.save()
-        return jsonify(new_user.to_dict(), 201)
+        return make_response(jsonify(new_user.to_dict(), 201))
 
 
 @app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
